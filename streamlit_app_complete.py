@@ -11,7 +11,7 @@ st.title("Road Accident Data Analysis")
 
 accidents = pd.read_csv("Road Accident Data.csv")
 
-st.write("Replace 'Fetal' with 'Fatal' in the Accident_Severity column")
+#Replace 'Fetal' with 'Fatal' in the Accident_Severity column
 accidents['Accident_Severity'] = accidents['Accident_Severity'].replace('Fetal', 'Fatal')
 
 
@@ -25,10 +25,11 @@ accidents['Day_or_Night'] = accidents['Light_Conditions'].apply(
 
 
 
-st.write("We calculate the number of accidents of each severity level")
+#We calculate the number of accidents of each severity level
 severity_counts = accidents['Accident_Severity'].value_counts()
 
-st.write("create a pie chart")
+#create a pie chart
+st.write("**let's draw some simple graphs to find some kind of relationship** ")
 fig = go.Figure(data=[
     go.Pie(
         labels=severity_counts.index,   # Severity categories (Slight, Serious, Fatal)
@@ -69,7 +70,7 @@ fig.update_layout(
 )
 
 
-fig.show()
+st.plotly_chart(fig, use_container_width=True)
 
 st.write("We count the number of accidents for each type of vehicle")
 vehicle_type_counts = accidents['Vehicle_Type'].value_counts()
@@ -90,7 +91,11 @@ fig.update_layout(
     xaxis_tickangle=-45  
 )
 
-fig.show()
+st.plotly_chart(fig, use_container_width=True)
+st.write("**My hypothesis is that - The number of serious accidents is higher in bad weather condition**")
+
+
+st.write("Let's check the average number of people who tried in different weather")
 
 casualties_weather = accidents.groupby('Weather_Conditions')['Number_of_Casualties'].mean().sort_values()
 # Average number of casualties by weather conditions
@@ -110,7 +115,7 @@ fig1.update_layout(
     xaxis=dict(tickangle=45),
     template='plotly'
 )
-fig1.show()
+st.plotly_chart(fig1, use_container_width=True)
 
 
 
@@ -130,7 +135,7 @@ filtered_data = accidents[accidents['Weather_Type'] != 'Unknown']
 severity_counts = filtered_data.groupby(['Weather_Type', 'Accident_Severity']).size().unstack(fill_value=0)
 severity_proportions = severity_counts.div(severity_counts.sum(axis=1), axis=0)
 
-
+st.write("**Now let’s check the number of accidents in bad and good weather**")
 # Accident severity distribution
 fig2 = go.Figure()
 for severity in severity_proportions.columns:
@@ -150,18 +155,16 @@ fig2.update_layout(
 )
 
 
-fig2.show()
+st.plotly_chart(fig2, use_container_width=True)
 
 
-print("Accident severity distribution:")
-print(severity_counts)
-print("\nPercentage distribution of accident severity:")
-print(severity_proportions)
+st.write("Accident severity distribution:")
+st.write(severity_counts)
+st.write("\nPercentage distribution of accident severity:")
+st.write(severity_proportions)
 
 
 
-# Вставка визуализаций или таблиц через Streamlit
 st.write("### Обработанные данные")
 st.write(accidents.head())
 
-# Добавьте дополнительные визуализации здесь
