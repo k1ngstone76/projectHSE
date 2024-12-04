@@ -119,7 +119,7 @@ st.plotly_chart(fig1, use_container_width=True)
 
 
 
-st.write("Classification of weather conditions into “good” and “bad” ")
+#Classification of weather conditions into “good” and “bad” 
 good_weather = ["Fine no high winds", "Fine with high winds"]
 bad_weather = ["Rain", "Snow", "Fog or mist", "Other", "Strong winds"]
 
