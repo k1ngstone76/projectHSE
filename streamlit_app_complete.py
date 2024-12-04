@@ -46,8 +46,7 @@ fig.update_layout(
 )
 
 
-fig.show()
-
+st.plotly_chart(fig, use_container_width=True)
 
 time_of_day_counts = accidents['Day_or_Night'].value_counts()
 
@@ -69,8 +68,7 @@ fig.update_layout(
 )
 
 
-fig.show()
-
+st.plotly_chart(fig, use_container_width=True)
 # We count the number of accidents for each type of vehicle
 vehicle_type_counts = accidents['Vehicle_Type'].value_counts()
 
@@ -90,8 +88,7 @@ fig.update_layout(
     xaxis_tickangle=-45  
 )
 
-fig.show()
-
+st.plotly_chart(fig, use_container_width=True)
 casualties_weather = accidents.groupby('Weather_Conditions')['Number_of_Casualties'].mean().sort_values()
 # Average number of casualties by weather conditions
 fig1 = go.Figure()
@@ -110,8 +107,7 @@ fig1.update_layout(
     xaxis=dict(tickangle=45),
     template='plotly'
 )
-fig1.show()
-
+st.plotly_chart(fig1, use_container_width=True)
 
 
 # Classification of weather conditions into “good” and “bad”
@@ -150,13 +146,12 @@ fig2.update_layout(
 )
 
 
-fig2.show()
+st.plotly_chart(fig2, use_container_width=True)
 
-
-print("Accident severity distribution:")
-print(severity_counts)
-print("\nPercentage distribution of accident severity:")
-print(severity_proportions)
+st.write("Accident severity distribution:")
+st.write(severity_counts)
+st.write("\nPercentage distribution of accident severity:")
+st.write(severity_proportions)
 
 
 
