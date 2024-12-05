@@ -1,1 +1,4 @@
-plotly, equests, fastapi, pydantic
+plotly 
+equests
+fastapi
+pydantic
