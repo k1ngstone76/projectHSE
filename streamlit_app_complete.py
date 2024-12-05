@@ -3,7 +3,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
-
+import requests
 st.title("Road Accident Data Analysis")
 
 
@@ -153,6 +153,49 @@ fig2.update_layout(
     legend_title="Severity of the accident",
     template='plotly'
 )
+
+
+st.title("Road Accident Data Interface")
+
+# GET-запрос для получения данных
+st.header("Accident Data")
+severity_filter = st.selectbox("Select Severity", ["All", "Fatal", "Serious", "Slight"])
+limit = st.slider("Number of Records", 1, 50, 10)
+
+params = {"limit": limit}
+if severity_filter != "All":
+    params["severity"] = severity_filter
+
+response = requests.get("http://127.0.0.1:8000/accidents/", params=params)
+if response.status_code == 200:
+    data = pd.DataFrame(response.json())
+    st.dataframe(data)
+else:
+    st.error("Failed to fetch data from the API")
+
+# POST-запрос для добавления новой записи
+st.header("Add New Accident")
+with st.form("accident_form"):
+    date = st.text_input("Date")
+    location = st.text_input("Location")
+    severity = st.selectbox("Accident Severity", ["Fatal", "Serious", "Slight"])
+    num_vehicles = st.number_input("Number of Vehicles", min_value=1)
+    num_casualties = st.number_input("Number of Casualties", min_value=1)
+    submitted = st.form_submit_button("Add Accident")
+    if submitted:
+        new_accident = {
+            "Date": date,
+            "Location": location,
+            "Accident_Severity": severity,
+            "Number_of_Vehicles": num_vehicles,
+            "Number_of_Casualties": num_casualties
+        }
+        res = requests.post("http://127.0.0.1:8000/accidents/", json=new_accident)
+        if res.status_code == 200:
+            st.success("Accident added successfully!")
+        else:
+            st.error("Failed to add accident.")
+
 
 
 st.plotly_chart(fig2, use_container_width=True)
