@@ -1,4 +1,6 @@
-plotly 
-equests
+streamlit
 fastapi
-pydantic
+uvicorn
+pandas
+requests
+plotly
