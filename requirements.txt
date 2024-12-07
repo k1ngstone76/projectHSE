@@ -1,6 +1,6 @@
-streamlit
 fastapi
 uvicorn
 pandas
 requests
 plotly
+streamlit

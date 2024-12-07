@@ -155,46 +155,55 @@ fig2.update_layout(
 )
 
 
-st.title("Road Accident Data Interface")
 
-# GET-запрос для получения данных
-st.header("Accident Data")
-severity_filter = st.selectbox("Select Severity", ["All", "Fatal", "Serious", "Slight"])
-limit = st.slider("Number of Records", 1, 50, 10)
+API_URL = "http://127.0.0.1:8000"  
 
-params = {"limit": limit}
-if severity_filter != "All":
-    params["severity"] = severity_filter
+st.title("Road Accident Management")
 
-response = requests.get("http://127.0.0.1:8000/accidents/", params=params)
-if response.status_code == 200:
-    data = pd.DataFrame(response.json())
-    st.dataframe(data)
-else:
-    st.error("Failed to fetch data from the API")
+# Секция для фильтрации и отображения данных
+st.header("Fetch Road Accidents Data")
+severity = st.selectbox("Select Severity", ["", "Fatal", "Serious", "Slight"])
+day_of_week = st.selectbox("Select Day of the Week", ["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"])
+limit = st.slider("Number of records to display", min_value=1, max_value=100, value=10)
 
-# POST-запрос для добавления новой записи
-st.header("Add New Accident")
-with st.form("accident_form"):
-    date = st.text_input("Date")
-    location = st.text_input("Location")
-    severity = st.selectbox("Accident Severity", ["Fatal", "Serious", "Slight"])
-    num_vehicles = st.number_input("Number of Vehicles", min_value=1)
-    num_casualties = st.number_input("Number of Casualties", min_value=1)
-    submitted = st.form_submit_button("Add Accident")
-    if submitted:
-        new_accident = {
-            "Date": date,
-            "Location": location,
-            "Accident_Severity": severity,
-            "Number_of_Vehicles": num_vehicles,
-            "Number_of_Casualties": num_casualties
+if st.button("Fetch Data"):
+    params = {"limit": limit}
+    if severity:
+        params["severity"] = severity
+    if day_of_week:
+        params["day_of_week"] = day_of_week
+
+    response = requests.get(f"{API_URL}/accidents", params=params)
+    if response.status_code == 200:
+        data = response.json()
+        st.write(data)
+    else:
+        st.error(f"Failed to fetch data: {response.status_code}")
+
+# Секция для добавления новых данных
+st.header("Add a New Road Accident Record")
+
+# Форма для добавления новой записи
+with st.form("add_accident_form"):
+    accident_index = st.text_input("Accident Index (Optional)")
+    accident_date = st.date_input("Accident Date")
+    location = st.text_input("Local Authority (District)")
+    accident_severity = st.selectbox("Accident Severity", ["Fatal", "Serious", "Slight"])
+    submit_button = st.form_submit_button("Submit New Record")
+
+    if submit_button:
+        new_record = {
+            "Accident_Index": accident_index if accident_index else None,
+            "date": str(accident_date),
+            "location": location,
+            "severity": accident_severity
         }
-        res = requests.post("http://127.0.0.1:8000/accidents/", json=new_accident)
-        if res.status_code == 200:
-            st.success("Accident added successfully!")
+
+        response = requests.post(f"{API_URL}/accidents", json=new_record)
+        if response.status_code == 200:
+            st.success("New record added successfully!")
         else:
-            st.error("Failed to add accident.")
+            st.error(f"Failed to add new record: {response.status_code}")
 
 
 
