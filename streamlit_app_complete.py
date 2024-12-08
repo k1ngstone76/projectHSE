@@ -16,6 +16,18 @@ accidents = pd.read_csv("Road Accident Data.csv")
 accidents['Accident_Severity'] = accidents['Accident_Severity'].replace('Fetal', 'Fatal')
 # Convert the Accident_Index column to sequential numbers for convenience
 accidents["Accident_Index"] = range(1, len(accidents) + 1)
+def ensure_date_format(column, desired_format='%Y-%m-%d', input_format='%m/%d/%Y'):
+    formatted_dates = []
+    for date in column:
+        try:
+            formatted_date = pd.to_datetime(date, format=desired_format).strftime(desired_format)
+        except ValueError:
+            formatted_date = pd.to_datetime(date, format=input_format).strftime(desired_format)
+        formatted_dates.append(formatted_date)
+    return formatted_dates
+
+
+accidents['Accident Date'] = ensure_date_format(accidents['Accident Date'])
 
 severity_mapping = {'Slight': 1, 'Serious': 2, 'Fatal': 3}
 accidents['Severity_Numeric'] = accidents['Accident_Severity'].map(severity_mapping)
@@ -141,7 +153,7 @@ st.write("**Now let’s check the number of accidents in bad and good weather**"
 # Accident severity distribution
 fig5 = go.Figure()
 for severity in severity_proportions.columns:
-    fig2.add_trace(go.Bar(
+    fig5.add_trace(go.Bar(
         x=severity_proportions.index,
         y=severity_proportions[severity],
         name=severity
